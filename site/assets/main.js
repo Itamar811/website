@@ -164,9 +164,17 @@
       });
     });
   }
+  // GA4 (gtag) ignores {event: ...} objects, so each event also goes through gtag once consent has loaded it.
+  // Phone and WhatsApp clicks share one GA event each; click_detail says which button.
+  function track(name, params) {
+    window.dataLayer.push(Object.assign({ event: name }, params));
+    if (!window.gtag) return;
+    var gaName = /^click_phone_/.test(name) ? 'phone_click' : /^click_whatsapp_/.test(name) ? 'whatsapp_click' : name;
+    window.gtag('event', gaName, Object.assign({ click_detail: name }, params));
+  }
   document.addEventListener('click', function (e) {
     var el = e.target.closest('[data-event]');
-    if (el) window.dataLayer.push({ event: el.getAttribute('data-event') });
+    if (el) track(el.getAttribute('data-event'));
   });
 
   var form = document.getElementById('contact-form');
@@ -188,7 +196,7 @@
     var v = function (id) { return document.getElementById(id).value.trim(); };
     var body = 'שם: ' + v('f-name') + '\nטלפון: ' + v('f-phone') + '\nדוא״ל: ' + v('f-email') +
       '\nסוג השירות: ' + v('f-service') + '\n\n' + v('f-message');
-    window.dataLayer.push({ event: 'form_submit', service_type: v('f-service') });
+    track('form_submit', { service_type: v('f-service') });
     window.location.href = 'mailto:dritamarfeldman@gmail.com?subject=' +
       encodeURIComponent('פנייה מהאתר: ' + v('f-service')) + '&body=' + encodeURIComponent(body);
     var status = document.getElementById('form-status');

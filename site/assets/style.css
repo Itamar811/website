@@ -278,7 +278,7 @@ textarea { min-height: 120px; resize: vertical; }
   .consent-actions .btn { flex: none; min-width: 7rem; white-space: nowrap; }
 }
 .link-btn { font: inherit; background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; }
-.site-footer .link-btn { color: #fff; }
+.site-footer .link-btn { color: #fff; min-height: 44px; margin-block: -.6rem; } /* finger-sized tap area, same line spacing as the links beside it */
 @media print { .consent { display: none !important; } }
 
 /* larger text */

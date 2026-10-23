@@ -16,6 +16,24 @@
   --bar-h: 64px;
 }
 
+/* Rubik (SIL OFL), self-hosted so no visitor request goes to Google. One variable file covers weights 400–500. */
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/rubik-hebrew.woff2) format("woff2");
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/rubik-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-block: 80px calc(var(--bar-h) + 76px); }
 @media (min-width: 900px) { html { scroll-padding-block: 80px 84px; } }
@@ -233,9 +251,9 @@ textarea { min-height: 120px; resize: vertical; }
 .tl-years { font-size: .9rem; color: var(--muted); direction: ltr; text-align: end; justify-self: start; }
 
 /* accessibility button + panel */
-.a11y-toggle { position: fixed; z-index: 65; inset-inline-end: 12px; bottom: calc(var(--bar-h) + 12px + env(safe-area-inset-bottom)); width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(26,58,92,.25); padding: 0; }
+.a11y-toggle { position: fixed; z-index: 65; inset-inline-end: 12px; bottom: calc(var(--bar-h) + var(--consent-h, 0px) + 12px + env(safe-area-inset-bottom)); width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(26,58,92,.25); padding: 0; }
 .a11y-toggle svg { width: 26px; height: 26px; }
-.a11y-panel { position: fixed; z-index: 75; inset-inline-end: 12px; bottom: calc(var(--bar-h) + 70px + env(safe-area-inset-bottom)); width: min(280px, calc(100vw - 24px)); background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 32px rgba(26,58,92,.2); padding: 1rem; display: grid; gap: .5rem; }
+.a11y-panel { position: fixed; z-index: 75; inset-inline-end: 12px; bottom: calc(var(--bar-h) + var(--consent-h, 0px) + 70px + env(safe-area-inset-bottom)); width: min(280px, calc(100vw - 24px)); background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 32px rgba(26,58,92,.2); padding: 1rem; display: grid; gap: .5rem; }
 .a11y-panel[hidden] { display: none; }
 .a11y-opt, .a11y-reset { font: inherit; text-align: start; min-height: 44px; padding: .5rem .9rem; border: 2px solid var(--blue); border-radius: var(--radius); background: #fff; color: var(--blue); cursor: pointer; }
 .a11y-opt[aria-pressed="true"] { background: var(--blue); color: #fff; }
@@ -243,10 +261,25 @@ textarea { min-height: 120px; resize: vertical; }
 .a11y-reset { border-color: var(--border); color: var(--muted); }
 .a11y-panel a { padding: .3rem .2rem; }
 @media (min-width: 900px) {
-  .a11y-toggle { bottom: 20px; }
-  .a11y-panel { bottom: 80px; }
+  .a11y-toggle { bottom: calc(var(--consent-h, 0px) + 20px); }
+  .a11y-panel { bottom: calc(var(--consent-h, 0px) + 80px); }
 }
 @media print { .a11y-toggle, .a11y-panel { display: none !important; } }
+
+/* analytics consent banner (only rendered when GA is configured); sits above the mobile action bar */
+.consent { position: fixed; z-index: 68; inset-inline: 0; bottom: calc(var(--bar-h) + env(safe-area-inset-bottom)); background: #fff; border-block-start: 1px solid var(--border); box-shadow: 0 -8px 32px rgba(26,58,92,.18); padding: 1rem 16px; font-size: 1rem; }
+.consent[hidden] { display: none; }
+.consent-actions { display: flex; gap: .75rem; margin-block-start: .75rem; }
+.consent-actions .btn { flex: 1; }
+@media (min-width: 900px) {
+  .consent { bottom: 0; display: flex; align-items: center; gap: 1.5rem; padding-inline: max(16px, calc((100vw - var(--wrap)) / 2)); }
+  .consent p { margin: 0; }
+  .consent-actions { margin: 0; flex: none; }
+  .consent-actions .btn { flex: none; min-width: 7rem; white-space: nowrap; }
+}
+.link-btn { font: inherit; background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; }
+.site-footer .link-btn { color: #fff; }
+@media print { .consent { display: none !important; } }
 
 /* larger text */
 html.a11y-text { font-size: 120%; }
@@ -259,12 +292,12 @@ html.a11y-links a:not(.btn) { background: #fff3a8; color: #000 !important; }
 html.a11y-contrast { --blue: #ffd400; --blue-dark: #ffd400; --sage: #ffd400; --sage-text: #ffd400; --sage-light: #000; --bg: #000; --bg-alt: #000; --text: #fff; --muted: #fff; --border: #fff; --focus: #00e5ff; }
 html.a11y-contrast body, html.a11y-contrast .site-header, html.a11y-contrast .site-footer, html.a11y-contrast .hero,
 html.a11y-contrast .page-head, html.a11y-contrast .section, html.a11y-contrast .card, html.a11y-contrast details,
-html.a11y-contrast .note, html.a11y-contrast .sheet, html.a11y-contrast .a11y-panel, html.a11y-contrast .action-bar,
+html.a11y-contrast .note, html.a11y-contrast .sheet, html.a11y-contrast .a11y-panel, html.a11y-contrast .action-bar, html.a11y-contrast .consent,
 html.a11y-contrast .main-nav, html.a11y-contrast .contact-card, html.a11y-contrast input, html.a11y-contrast select,
 html.a11y-contrast textarea, html.a11y-contrast .chips li, html.a11y-contrast .a11y-opt, html.a11y-contrast .a11y-reset,
 html.a11y-contrast .menu-toggle { background: #000 !important; color: #fff !important; border-color: #fff !important; box-shadow: none !important; }
 html.a11y-contrast a:not(.btn), html.a11y-contrast summary, html.a11y-contrast h1, html.a11y-contrast h2, html.a11y-contrast h3,
-html.a11y-contrast .action-bar a, html.a11y-contrast .action-bar button { color: #ffd400 !important; }
+html.a11y-contrast .action-bar a, html.a11y-contrast .action-bar button, html.a11y-contrast .link-btn { color: #ffd400 !important; }
 html.a11y-contrast.a11y-links a:not(.btn) { background: none; color: #ffd400 !important; }
 html.a11y-contrast .btn-primary, html.a11y-contrast .a11y-opt[aria-pressed="true"], html.a11y-contrast .a11y-toggle { background: #ffd400 !important; color: #000 !important; border-color: #ffd400 !important; }
 html.a11y-contrast .btn-outline { background: #000 !important; color: #ffd400 !important; border-color: #ffd400 !important; }
